@@ -60,4 +60,32 @@ public class PipelineServiceImpl implements PipelineService{
                 ((BigDecimal) result[2]) // premium_sum
         )).collect(Collectors.toList());
     }
+
+    @Override
+    public PipelineDashboardResponse getPipelineInfoForSalesAgent(Long salesAgentId) {
+        BigDecimal pipelineSales = getPipelineSalesBySalesAgentIdAndCurrentYear(salesAgentId);
+        PipelineDashboardResponse response = new PipelineDashboardResponse();
+        response.setPipelineSales(pipelineSales);
+        return response;
+    }
+
+    private BigDecimal getPipelineSalesBySalesAgentIdAndCurrentYear(Long salesAgentId) {
+        String[] opportunityType = {"New Policy Sale", "Cross-Sell Opportunity"};
+        String[] stages = {"Qualification", "Underwriting", "Proposal", "Negotiation", "Needs Analysis", "Prospecting"};
+
+        // Fetch the sales pipeline entries for the sales agent
+        List<SalesPipelineEntries> entries = salesPipelineEntryRepository
+                .findBySalesAgentIdAndCreatedDtBetweenAndOpportunityTypeInAndStageIn(
+                        salesAgentId,
+                        calculateDates.getStartDate(),
+                        calculateDates.getEndDate(),
+                        opportunityType,
+                        stages);
+
+        // Calculate the total target premium amount for sales agents
+        return entries.stream()
+                .map(SalesPipelineEntries::getTargetPremiumAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

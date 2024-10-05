@@ -21,12 +21,18 @@ public class SalesController {
     }
 
     @GetMapping("/sales")
-    public ResponseEntity<SalesDashboardResponse> getSalesInfo(@RequestHeader("X-Username") Long loggedInEmployeeId, @RequestParam Long employeeId)
+    public ResponseEntity<SalesDashboardResponse> getSalesInfo(@RequestHeader("X-Username") Long loggedInEmployeeId, @RequestParam Long id, @RequestParam(value = "userType", defaultValue = "employee") String userType)
     {
-        if (!employeeId.equals(loggedInEmployeeId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        SalesDashboardResponse response;
+        if ("sales_agent".equalsIgnoreCase(userType)) {
+            response = salesService.getSalesAgentInfo(id);  // Call sales agent-specific service
+        } else {
+            if (!id.equals(loggedInEmployeeId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            response = salesService.getSalesInfo(id);  // Call employee-specific service
         }
-        return ResponseEntity.ok(salesService.getSalesInfo(employeeId));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/people")

@@ -22,12 +22,18 @@ public class PipelineController {
     }
 
     @GetMapping("/pipeline")
-    public ResponseEntity<PipelineDashboardResponse> getPipelineInfo(@RequestHeader("X-Username") Long loggedInEmployeeId, @RequestParam Long employeeId)
+    public ResponseEntity<PipelineDashboardResponse> getPipelineInfo(@RequestHeader("X-Username") Long loggedInEmployeeId, @RequestParam Long id, @RequestParam(value = "userType", defaultValue = "employee") String userType)
     {
-        if (!employeeId.equals(loggedInEmployeeId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        PipelineDashboardResponse response;
+        if ("sales_agent".equalsIgnoreCase(userType)) {
+            response = pipelineService.getPipelineInfoForSalesAgent(id);  // Call sales agent-specific service
+        } else {
+            if (!id.equals(loggedInEmployeeId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            response = pipelineService.getPipelineInfo(id);  // Call employee-specific service
         }
-        return ResponseEntity.ok(pipelineService.getPipelineInfo(employeeId));
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/stages")
     public ResponseEntity<List<StageSummary>> getPoliciesCountAndPremiumSumByStage(@RequestHeader("X-Username") Long loggedInEmployeeId, @RequestParam("employeeId") Long employeeId) {

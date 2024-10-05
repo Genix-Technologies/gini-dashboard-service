@@ -10,4 +10,6 @@ import java.util.List;
 public interface PipelineService {
     PipelineDashboardResponse getPipelineInfo(Long employeeId);
     List<StageSummary> getPoliciesCountAndPremiumSumByStageForEmployee(Long employeeId);
+
+    PipelineDashboardResponse getPipelineInfoForSalesAgent(Long id);
 }

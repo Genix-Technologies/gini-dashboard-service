@@ -16,6 +16,17 @@ public interface SalesPipelineEntriesRepository extends JpaRepository<SalesPipel
 
     List<SalesPipelineEntries> findByEmployeeIdAndCreatedDtBetweenAndOpportunityTypeInAndStageIn(Long employeeId, LocalDateTime startDate, LocalDateTime endDate, String[] opportunityType, String[] stages);
 
+    List<SalesPipelineEntries> findBySalesAgentIdAndCreatedDtBetweenAndStage(Long salesAgentId, LocalDateTime startDate, LocalDateTime endDate, String closedWon);
+
+    Long countDistinctPolicyNoBySalesAgentIdAndCreatedDtBetweenAndStage(Long salesAgentId, LocalDateTime startDate, LocalDateTime endDate, String closedWon);
+
+    List<SalesPipelineEntries> findBySalesAgentIdAndCreatedDtBetweenAndOpportunityTypeInAndStageIn(
+            Long salesAgentId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            String[] opportunityType,
+            String[] stages);
+
     @Query(value = "SELECT stage, COUNT(policy_no) AS policy_count, SUM(target_premium_amount) AS premium_sum " +
             "FROM sales_pipeline_entries " +
             "WHERE employee_id = :employeeId AND YEAR(created_dt) = YEAR(CURRENT_DATE) " +

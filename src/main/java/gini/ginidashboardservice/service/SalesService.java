@@ -10,4 +10,6 @@ import java.util.List;
 public interface SalesService {
     SalesDashboardResponse getSalesInfo(Long employeeId);
     public List<SalesAgentSummary> getTopSalesAgents(String agentName);
+
+    SalesDashboardResponse getSalesAgentInfo(Long id);
 }
