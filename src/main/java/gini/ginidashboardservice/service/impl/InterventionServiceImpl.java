@@ -2,10 +2,7 @@ package gini.ginidashboardservice.service.impl;
 
 import gini.ginidashboardservice.dto.InterventionResponse;
 import gini.ginidashboardservice.dto.PeopleDTO;
-import gini.ginidashboardservice.models.Intervention;
-import gini.ginidashboardservice.models.SalesAgent;
 import gini.ginidashboardservice.repositories.CustomInterventionRepository;
-import gini.ginidashboardservice.repositories.InterventionRepository;
 import gini.ginidashboardservice.repositories.SalesAgentRepository;
 import gini.ginidashboardservice.service.InterventionService;
 import org.springframework.data.domain.Page;
@@ -18,12 +15,10 @@ import java.util.List;
 
 @Service
 public class InterventionServiceImpl implements InterventionService {
-    private final InterventionRepository interventionRepository;
     private final SalesAgentRepository salesAgentRepository;
     private final CustomInterventionRepository customInterventionRepository;
 
-    public InterventionServiceImpl(InterventionRepository interventionRepository, SalesAgentRepository salesAgentRepository, CustomInterventionRepository customInterventionRepository) {
-        this.interventionRepository = interventionRepository;
+    public InterventionServiceImpl(SalesAgentRepository salesAgentRepository, CustomInterventionRepository customInterventionRepository) {
         this.salesAgentRepository = salesAgentRepository;
         this.customInterventionRepository = customInterventionRepository;
     }
@@ -36,7 +31,7 @@ public class InterventionServiceImpl implements InterventionService {
 
     @Override
     public Page<PeopleDTO> getInteractionsWithAgentNames(Long employeeId, Pageable pageable) {
-        Page<Object[]> results = interventionRepository.findInteractionsWithAgentNamesByEmployeeId(employeeId, pageable);
+        Page<Object[]> results = customInterventionRepository.findInteractionsWithAgentNamesByEmployeeId(employeeId, pageable);
 
         List<PeopleDTO> peopleDTOS = new ArrayList<>();
         for (Object[] result : results) {
