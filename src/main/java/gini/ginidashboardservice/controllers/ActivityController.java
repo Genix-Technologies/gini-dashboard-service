@@ -1,6 +1,7 @@
 package gini.ginidashboardservice.controllers;
 
 import gini.ginidashboardservice.dto.ActivityResponse;
+import gini.ginidashboardservice.dto.PipelineDashboardResponse;
 import gini.ginidashboardservice.service.ActivityService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,14 +23,20 @@ public class ActivityController {
     @GetMapping("/activities")
     public ResponseEntity<Page<ActivityResponse>> getActivityTypeCounts(
             @RequestHeader("X-Username") Long loggedInEmployeeId,
-            @RequestParam Long employeeId,
+            @RequestParam Long id,
+            @RequestParam(value = "userType", defaultValue = "employee") String userType,
             @RequestParam int page,
             @RequestParam int size) {
-        if (!employeeId.equals(loggedInEmployeeId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
-        Page<ActivityResponse> activities = activityService.getActivityTypeCountsByEmployeeId(employeeId, PageRequest.of(page, size));
-        return ResponseEntity.ok(activities);
+        Page<ActivityResponse> response;
+        if ("sales_agent".equalsIgnoreCase(userType)) {
+            response = activityService.getActivityTypeCountsByAgentId(id, PageRequest.of(page, size));  // Call sales agent-specific service
+        } else {
+            if (!id.equals(loggedInEmployeeId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            response = activityService.getActivityTypeCountsByEmployeeId(id, PageRequest.of(page, size));  // Call employee-specific service
+        }
+        return ResponseEntity.ok(response);
     }
 }
