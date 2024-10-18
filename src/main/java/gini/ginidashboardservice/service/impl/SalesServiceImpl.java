@@ -141,11 +141,12 @@ public class SalesServiceImpl implements SalesService{
     List<SalesAgentSummary> salesAgentSummaries = new ArrayList<>();
 
     for (Object[] result : results) {
-        String name = (String) result[0];
-        String email = (String) result[1];
-        BigDecimal totalTargetPremium = (BigDecimal) result[2];
+        Long id = (Long) result[0];
+        String name = (String) result[1];
+        String email = (String) result[2];
+        BigDecimal totalTargetPremium = (BigDecimal) result[3];
 
-        salesAgentSummaries.add(new SalesAgentSummary(name, email, totalTargetPremium));
+        salesAgentSummaries.add(new SalesAgentSummary(id,name, email, totalTargetPremium));
     }
 
     return salesAgentSummaries;

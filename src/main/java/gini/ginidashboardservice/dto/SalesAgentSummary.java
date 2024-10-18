@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SalesAgentSummary {
+    private Long agentId;
     private String agentName;
     private String email;
     private BigDecimal totalTargetPremium;
