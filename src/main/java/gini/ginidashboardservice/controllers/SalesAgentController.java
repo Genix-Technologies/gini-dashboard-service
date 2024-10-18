@@ -2,6 +2,7 @@ package gini.ginidashboardservice.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gini.ginidashboardservice.dto.ProductsDTO;
 import gini.ginidashboardservice.models.SalesAgent;
 import gini.ginidashboardservice.repositories.SalesAgentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class SalesAgentController {
@@ -52,22 +54,30 @@ public class SalesAgentController {
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<List<Map<String, String>>> getProducts(@PathVariable Long id) {
+    public ResponseEntity<List<ProductsDTO>> getProducts(@PathVariable Long id) {
         Optional<SalesAgent> salesAgent = salesAgentRepository.findById(id);
         if (salesAgent.isPresent()) {
             String productsJson = salesAgent.get().getProducts();
             ObjectMapper mapper = new ObjectMapper();
             try {
-                List<Map<String, String>> productsList = mapper.readValue(productsJson, (new TypeReference<List<Map<String, String>>>() {
-                }));
+                // Parse JSON into a list of maps to handle dynamic keys
+                List<Map<String, String>> productsMapList = mapper.readValue(productsJson, new TypeReference<List<Map<String, String>>>() {});
+
+                // Convert the list of maps into a list of ProductsDTO
+                List<ProductsDTO> productsList = productsMapList.stream()
+                        .map(map -> map.entrySet().stream()
+                                .map(entry -> new ProductsDTO(entry.getKey(), entry.getValue()))
+                                .findFirst()
+                                .orElse(null))
+                        .collect(Collectors.toList());
+
                 return ResponseEntity.ok(productsList);
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
+        }    }
 
     @GetMapping("/{id}/topics")
     public ResponseEntity<String[]> getTopics(@PathVariable Long id) {
