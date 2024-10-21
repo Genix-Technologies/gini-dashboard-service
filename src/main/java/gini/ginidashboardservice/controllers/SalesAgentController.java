@@ -33,8 +33,8 @@ public class SalesAgentController {
             response.put("performance_segment", salesAgent.get().getPerformanceSegment());
             response.put("lifetime_value", salesAgent.get().getLifetimeValue());
             response.put("engagement_score", salesAgent.get().getEngagementScore());
-            response.put("60_day_sentiment", salesAgent.get().getSentiment60Day());
-            response.put("30_day_sales_forecast", salesAgent.get().getSalesForecast30Day());
+            response.put("sentiment_60_days", salesAgent.get().getSentiment60Day());
+            response.put("sales_forecast_30_days", salesAgent.get().getSalesForecast30Day());
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

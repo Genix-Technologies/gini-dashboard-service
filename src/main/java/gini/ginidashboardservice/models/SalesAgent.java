@@ -77,9 +77,6 @@ public class SalesAgent {
         @Column(name = "products", columnDefinition = "json")
         private String products;
 
-        @Column(name = "products_str")
-        private String productsStr;
-
         @Column(name = "created_at", nullable = false, updatable = false)
         private Timestamp createdAt;
 
